@@ -1,0 +1,37 @@
+!========================================================================
+! Copyright (C) GemStone Systems, Inc. 1986-2002.  All Rights Reserved.
+! Name - insert.tpz
+! Description: input file to run insert operation
+!========================================================================
+!
+login
+input util/resultcheck.tpz
+omit oops
+
+level 0
+
+output push $resultdir/logDir/insert.out only
+expectvalue %Array
+run
+UserGlobals at: #INS put: (Bench runInsertsWithRepeatCount: 1).
+%
+
+expectvalue true
+run
+((INS at: 1) at: 2) = NumNewCompParts
+%
+
+omit resultcheck
+iferror
+
+input util/ensureGcRunning.gs
+
+expectvalue true
+run
+System commitTransaction.
+SystemRepository objectAudit.
+%
+commit
+output pop
+logout
+

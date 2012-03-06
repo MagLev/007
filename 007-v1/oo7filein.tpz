@@ -1,0 +1,136 @@
+!========================================================================
+! Copyright (C) GemStone Systems, Inc. 1986-2002.  All Rights Reserved.
+! Name - oo7filein.tpz
+! Description: input files to file-in the schema definitions and the
+!              class and instance protocols, and then populate the
+!              schema
+!========================================================================
+!
+output push $resultdir/logDir/oo7filein.out only
+
+set user SystemUser pass swordfish
+login
+
+classMethod: System
+secondsElapsedTime: aBlock
+
+  "Return the elapsed time in seconds aBlock takes to return its value.
+   The argument aBlock must be a zero-argument block."
+
+  | startTime endTime elapsedTime |
+  
+  startTime := self _timeMs.
+  aBlock value.
+  endTime := self _timeMs.
+
+  elapsedTime := endTime - startTime.
+
+  (elapsedTime > 0)
+    ifFalse: [elapsedTime := elapsedTime + 1048576000].
+
+
+  ^ (elapsedTime / 1000) asDecimalFloat.
+%
+commit
+
+logout
+
+set user DataCurator pass swordfish
+login
+
+!# The configuration
+!# input configoo7.tpz
+
+!# The schema
+input oo7schema.gs
+
+!# General parameters
+input genparams.gs
+
+!# Random number generator generator
+input Random.gs
+
+# !Random number generators
+input randgen.gs
+
+!# Sequential Id generators
+input IdGenerator.gs
+input idgen.gs
+
+!# Class Module
+input Module.gs
+
+!# Class Manual
+input Manual.gs
+
+!# Class Assembly
+!# Class ComplexAssembly
+!# Class BaseAssembly
+input Assembly.gs
+input ComplexAssembly.gs
+input BaseAssembly.gs
+
+!# Class AtomicPart
+input AtomicPart.gs
+
+!# Class CompositePart
+input CompositePart.gs
+
+!# Class Connection
+input Connection.gs
+
+!# Class DesignObj
+input DesignObj.gs
+
+!# Class Document
+input Document.gs
+
+!# Class Query
+input Query.gs
+
+!# Class Bench
+input Bench.gs
+
+run
+System commitTransaction
+%
+
+commit
+logout
+
+output pop
+
+!#################################################################
+! gendb.sh
+
+input util/resultcheck.tpz
+output push $resultdir/logDir/gendb.out only
+
+login
+expectvalue %DecimalFloat
+run
+purge ifTrue: [Bench CreateDummy: NumDummy].
+Bench GenDB.
+%
+
+omit resultcheck
+iferror
+expectvalue true
+run
+SystemRepository markForCollection.
+%
+
+input util/ensureGcRunning.gs
+
+expectvalue true
+run
+SystemRepository objectAudit.
+%
+commit
+output pop
+
+logout
+
+!#################################################################
+! 
+

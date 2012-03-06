@@ -1,0 +1,36 @@
+!========================================================================
+! Copyright (C) GemStone Systems, Inc. 1986-2002.  All Rights Reserved.
+! Name - delete.tpz
+! Description: input file to run delete operation
+!========================================================================
+!
+login
+input util/resultcheck.tpz
+omit oops
+
+level 0
+
+output push $resultdir/logDir/delete.out only
+expectvalue %Array
+run
+UserGlobals at: #DEL put: (Bench runDeletesWithRepeatCount: 1).
+%
+expectvalue true
+run
+((DEL at: 1) at: 2) = NumNewCompParts
+%
+
+omit resultcheck
+iferror
+
+input util/ensureGcRunning.gs
+
+expectvalue true
+run
+System commitTransaction.
+SystemRepository objectAudit.
+%
+commit
+output pop
+logout
+

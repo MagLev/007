@@ -1,0 +1,45 @@
+
+1. Modify clear.sh to represent the raw partitions on the machine.
+2. run clear.sh
+     Usage: clear.sh $GEMSTONE
+
+3. startstone
+4. filein the benchmark classes using oo7filein.sh.
+	Usage: oo7filein.sh $GEMSTONE med3.
+
+	The initial OO7 benchmark defined various database sizes 
+	as small3, small6, ..., med3, med6, med9.
+	small vs med indicated the size of the database, the digit
+	at the end indicated the fannout. For multiuser benchmark
+	they are going to use med3 only. Hence the first parameter
+	is med3.
+
+5. run build.sh to build the database.
+     Usage: build.sh $GEMSTONE totalNumUsers numToBuildInParallel
+
+     Each user contributes about 80 MB of data. To build a 20 GB database,
+     we need to build a 250 user database.
+
+     The building is done incrementally. One can build a 10 user database
+     and then add another 100 users later.
+
+     numToBuildInParallel determines how many topaz process try to
+     build the database in parallel. Set it to equal the number of
+     cpu's available on the machine.
+
+6. run runtest.sh
+     Usage: runtest.sh $GEMSTONE numUsers sleepBetweenLogins
+
+     if numUsers is greater than the number of users allowed for a
+     particular database (size), a few of the topaz processes will
+     exit without doing any work.
+
+7. run count.sh to count things like number of objects updated etc.
+     modify this script to record whatever numbers you are interested
+     in.
+
+     Usage: count.sh $GEMSTONE sampleTime
+     set sampleTime (seconds) to something like 30
+
+8. the numbers are contained in UserGlobals at: #stats. Run topaz
+   to look at them.

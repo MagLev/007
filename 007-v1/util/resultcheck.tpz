@@ -1,0 +1,18 @@
+!========================================================================
+! Copyright (C) GemStone Systems, Inc. 1986-2002.  All Rights Reserved.
+! Name - resultcheck.tpz
+! Description: standard QC result display from topaz
+!========================================================================
+
+display oops 
+omit bytes
+omit struct
+omit classoops
+display names
+display resultcheck
+limit oops 100
+limit bytes 500
+! iferr 1 where
+! iferr 2 stack
+time
+

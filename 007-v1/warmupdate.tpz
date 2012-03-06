@@ -1,0 +1,42 @@
+!========================================================================
+! Copyright (C) GemStone Systems, Inc. 1986-2002.  All Rights Reserved.
+! Name - warmupdate.tpz
+! Description: input file to run warmupdate operation
+!========================================================================
+!
+login
+
+input util/resultcheck.tpz
+omit oops
+
+output push $resultdir/logDir/warmupdate.out only
+
+expectvalue %Array
+run
+UserGlobals at: #WU put: (Bench warmUpdateWithRepeatCount: 1).
+%
+
+expectvalue %Array
+run
+# [ ((WU at: 1) at: 2), 
+    ((TotalModules * NumCompPerAssm)
+       raisedToInteger: NumAssmLevels) ]
+%
+
+omit resultcheck
+iferror
+
+expectvalue true
+run
+System commitTransaction.
+%
+
+input util/ensureGcRunning.gs
+
+expectvalue true
+run
+SystemRepository objectAudit.
+%
+commit
+output pop
+logout
